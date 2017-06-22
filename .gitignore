@@ -76,3 +76,6 @@ recorder/.vscode/settings.json
 *.so
 BtPrinter.h
 ui/.vscode
+
+idea/*
+.vertx/*

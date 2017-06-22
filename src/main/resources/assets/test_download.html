@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #container {
+            height: 100%;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            padding: 10px;
+            width: 740px;
+            left: 50%;
+            /*margin-left: -150px;*/
+            height: 480px;
+            top: 50%;
+            margin-top: -100px;
+            background: #FFF;
+            border-radius: 4px;
+            z-index: 20;
+
+            /*position: relative;*/
+            /*min-width: 640px;*/
+            /*max-width: 90%;*/
+            /*min-height: 500px;*/
+            /*max-height: 90vh;*/
+            /*background: #fff;*/
+            /*border-radius: 4px;*/
+            /*outline: none;*/
+            /*margin: 0 auto;*/
+        }
+
+        #close_cross{
+            margin-left: 0px;
+            margin-top: 0px;
+        }
+    </style>
+    <title>TestDownload</title>
+    <script>
+        $ = function(id) {
+            return document.getElementById(id);
+        }
+
+        var show = function(id) {
+            $(id).style.display ='block';
+        }
+        var hide = function(id) {
+            $(id).style.display ='none';
+        }
+    </script>
+</head>
+<body>
+<button class="_2AkmmA _2Npkh4 _2kuvG8 _7UHT_c" type="button" onclick="show('popup1')"><span class="_279WdV" ></span>
+    <!-- react-text: 140 --> <!-- /react-text --><!-- react-text: 141 -->EXCHANGE<!-- /react-text --></button>
+<div class="popup" id="popup1">
+    <a href="getSysInfo" download="getSysInfo"><button>Anchor</button></a>
+</div>
+
+<!--<form method="get" action="getSysInfo">-->
+    <!--<button type="submit">Form button</button>-->
+<!--</form>-->
+<!--<button href="getSysInfo">button</button>-->
+<!--<Button href="getSysInfo">Button</Button>-->
+</body>
+</html>
