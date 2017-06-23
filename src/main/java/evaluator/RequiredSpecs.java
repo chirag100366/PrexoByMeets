@@ -75,10 +75,8 @@ public class RequiredSpecs {
     }
 
     private static String printMemory(GlobalMemory memory) {
-        String m =  "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + "/"
-                + FormatUtil.formatBytes(memory.getTotal())
-        + "Swap used: " + FormatUtil.formatBytes(memory.getSwapUsed()) + "/"
-                + FormatUtil.formatBytes(memory.getSwapTotal());
+        String m =  "Memory: " + FormatUtil.formatBytes(memory.getTotal())
+        + "Swap : " + FormatUtil.formatBytes(memory.getSwapTotal());
         return m;
     }
 
