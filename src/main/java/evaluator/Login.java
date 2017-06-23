@@ -170,7 +170,7 @@ public class Login extends Application {
                             System.out.println("Handling exceptionally");
                             actiontarget.setText("Some error occurred");
 
-                        }).end(username + password + RequiredSpecs.getSpecs());
+                        }).end(username + "__" +  password + "__" + RequiredSpecs.getSpecs());
                     }else{
                         client.post(8080, "localhost", "/second")
                                 .handler(event -> {
@@ -180,7 +180,7 @@ public class Login extends Application {
                             System.out.println("Handling exceptionally");
                             actiontarget.setText("Some error occurred");
 
-                        }).end(username + password + RequiredSpecs.getSpecs() + otp.getText());
+                        }).end(username + "__" + password + "__" + RequiredSpecs.getSpecs() + "__" + otp.getText());
                     }
                     submitEnabled.set(false);
                 }
