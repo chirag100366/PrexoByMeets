@@ -30,16 +30,19 @@ package evaluator;/*
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.impl.HttpClientImpl;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -47,6 +50,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Login extends Application {
 
@@ -54,8 +61,12 @@ public class Login extends Application {
         launch(args);
     }
 
+    Scene scene1, scene2;
+    private Stage theStage;
+
     @Override
     public void start(Stage primaryStage) {
+        theStage = primaryStage;
         primaryStage.setTitle("JavaFX Welcome");
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -78,27 +89,107 @@ public class Login extends Application {
 
         PasswordField pwBox = new PasswordField();
         grid.add(pwBox, 1, 2);
+        //A radio button with an empty string for its label
+        CheckBox rb1 = new CheckBox();
+        //Setting a text label
+        rb1.setText("Is FE here?");
+        grid.add(rb1, 1,3);
 
-        Button btn = new Button("Sign in");
+        Label otpLabel = new Label("OTP:");
+
+        TextField otp = new TextField();
+
+        otp.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    otp.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+
+        Button btn = new Button("Sign in & evaluate");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 1, 4);
 
+
+        rb1.setOnAction(event -> {
+            if(rb1.isSelected()) {
+                grid.add(otp, 1, 5);
+                grid.add(otpLabel, 0, 5);
+            }
+            else {
+                grid.getChildren().remove(otp);
+                grid.getChildren().remove(otpLabel);
+
+            }
+        });
+
+
+
         final Text actiontarget = new Text();
         grid.add(actiontarget, 1, 6);
 
+        AtomicInteger level = new AtomicInteger(0);
+        AtomicBoolean submitEnabled = new AtomicBoolean(true);
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent e) {
-                actiontarget.setFill(Color.FIREBRICK);
-                actiontarget.setText("Sign in button pressed");
+                if(submitEnabled.compareAndSet(true, true)) {
+                    actiontarget.setFill(Color.FIREBRICK);
+                    String username = userTextField.getText();
+                    String password = userTextField.getText();
+
+                    PauseTransition pauseTransition = new PauseTransition(Duration.seconds(10));
+
+                    Vertx vertx = Vertx.vertx();
+                    HttpClient client = vertx.createHttpClient();
+                    pauseTransition.setOnFinished(event -> {
+//                        System.out.println(level + " " + level.compareAndSet(1, 1));
+//                        if (level.compareAndSet(1, 1)) {
+//                            // theStage.setScene(new ProgressBarComponent().getScene());
+//                            System.out.println("Pause transition finished with success");
+//
+//                        } else {
+                            System.out.println("Pause transition finished with failure");
+                            theStage.close();
+                      //  }
+                        submitEnabled.set(true);
+                    });
+                    pauseTransition.play();
+                    if(!rb1.isSelected()) {
+                        client.post(8080, "localhost", "/first")
+                                .handler(event -> {
+                                    level.set(1);
+                                    actiontarget.setText(event.statusMessage());
+                                }).exceptionHandler(event -> {
+                            System.out.println("Handling exceptionally");
+                            actiontarget.setText("Some error occurred");
+
+                        }).end(username + password + RequiredSpecs.getSpecs());
+                    }else{
+                        client.post(8080, "localhost", "/second")
+                                .handler(event -> {
+                                    level.set(1);
+                                    actiontarget.setText(event.statusMessage());
+                                }).exceptionHandler(event -> {
+                            System.out.println("Handling exceptionally");
+                            actiontarget.setText("Some error occurred");
+
+                        }).end(username + password + RequiredSpecs.getSpecs() + otp.getText());
+                    }
+                    submitEnabled.set(false);
+                }
             }
         });
 
         Scene scene = new Scene(grid, 300, 275);
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 }

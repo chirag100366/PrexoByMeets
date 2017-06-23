@@ -17,7 +17,7 @@ public class RequiredSpecs {
      *
      * @param args the arguments
      */
-    public static void main(String[] args) {
+    public static String getSpecs() {
         // Options: ERROR > WARN > INFO > DEBUG > TRACE
         Logger LOG = LoggerFactory.getLogger(evaluator.HardwareEvaluator.class);
 
@@ -40,6 +40,7 @@ public class RequiredSpecs {
         LOG.info("Checking Disks...");
         fingerPrint += printDisks(hal.getDiskStores());
         System.out.println(fingerPrint);
+        return fingerPrint;
     }
 
     private static String printComputerSystem(final ComputerSystem computerSystem) {
