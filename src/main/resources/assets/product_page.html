@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #container {
+            height: 100%;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            padding: 10px;
+            width: 740px;
+            left: 20%;
+            /*margin-left: -150px;*/
+            height: 480px;
+            top: 50%;
+            margin-top: -100px;
+            background: #FFF;
+            border-radius: 4px;
+            z-index: 20;
+
+            /*position: relative;*/
+            /*min-width: 640px;*/
+            /*max-width: 90%;*/
+            /*min-height: 500px;*/
+            /*max-height: 90vh;*/
+            /*background: #fff;*/
+            /*border-radius: 4px;*/
+            /*outline: none;*/
+            /*margin: 0 auto;*/
+        }
+
+        #close_cross{
+            margin-left: 0px;
+            margin-top: 0px;
+        }
+    </style>
+    <title>Product Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        $ = function(id) {
+            return document.getElementById(id);
+        }
+
+        var show = function(id) {
+            $(id).style.display ='block';
+        }
+        var hide = function(id) {
+            $(id).style.display ='none';
+        }
+
+        function httpGetAsync(theUrl, callback)
+        {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous
+            xmlHttp.send(null);
+        }
+        function updateQuote(quote)
+        {
+            document.getElementById("quote1").innerHTML = 'Rs ' + quote;
+        }
+    </script>
+</head>
+<body>
+<img src="flipkart_logo_detail.jpg" style="width: 30%; height: 30%">
+<h2> Click on exchange</h2>
+<button class="_2AkmmA _2Npkh4 _2kuvG8 _7UHT_c" type="button" onclick="show('popup1')"><span class="_279WdV" ></span>
+    <!-- react-text: 140 --> <!-- /react-text --><!-- react-text: 141 -->Exchange<!-- /react-text --></button>
+<div class="popup" id="popup1">
+    <a href="getSysInfo.jar" download="getSysInfo.jar"><button onclick="">Evaluate My System</button></a>
+    <button onclick="httpGetAsync('/quote/abc/abc', updateQuote)">Get quote</button>
+    <p>Quote</p><h1 id="quote1"></h1>
+    <ul>
+        <li>Please run the jar which will get downloaded after clicking the first button, </br> this will help us evaluate your laptop</li>
+        <li>Click on get quote when the jar app shows Ok</li>
+    </ul>
+
+</div>
+
+<!--<form method="get" action="getSysInfo">-->
+    <!--<button type="submit">Form button</button>-->
+<!--</form>-->
+<!--<button href="getSysInfo">button</button>-->
+<!--<Button href="getSysInfo">Button</Button>-->
+</body>
+</html>

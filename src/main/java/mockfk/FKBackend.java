@@ -3,8 +3,7 @@ package mockfk;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.MultiMap;
-import io.vertx.ext.web.Route;
+import io.vertx.core.http.HttpClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -21,6 +20,8 @@ import java.util.Random;
  */
 public class FKBackend extends AbstractVerticle {
 
+    HttpClient httpClient;
+
     Map<FKUser, FKMachine> userMachineMap = new HashMap<>();
 
     @Override
@@ -29,6 +30,7 @@ public class FKBackend extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(LoggerHandler.create());
         router.route("/assets/*").handler(StaticHandler.create("assets"));
+        router.get("/quote/:username/:password").handler(this::handleGetQuote);
         router.route("/first").handler(BodyHandler.create());
         router.route("/first").handler(this::handlePurchasePath);
         router.route("/second").handler(BodyHandler.create());
@@ -47,6 +49,31 @@ public class FKBackend extends AbstractVerticle {
                             }
                         }
                 );
+
+        httpClient = vertx.createHttpClient();
+    }
+
+
+    private void handleGetQuote(RoutingContext routingContext) {
+       final String username = routingContext.request().getParam("username");
+       final String password = routingContext.request().getParam("password");
+       FKUser fkUser = new FKUser(username, password);
+       if(userMachineMap.get(fkUser) == null){
+           System.out.println("No user found");
+           routingContext.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
+       }else{
+           Integer price = 2000;
+           String spec = userMachineMap.get(fkUser).getSpecs();
+           if(spec.contains("i5-")){
+               price = 5000;
+           }else if(spec.contains("i7-")){
+               price = 10000;
+           }else if(spec.contains("i3-")){
+               price = 3000;
+           }
+
+           routingContext.response().setStatusCode(HttpResponseStatus.OK.code()).end(price.toString());
+       }
     }
 
     private void handleDoorStep(RoutingContext routingContext) {
@@ -95,6 +122,7 @@ public class FKBackend extends AbstractVerticle {
         FKMachine machine = new FKMachine(specs, String.valueOf(rand.nextInt(9999) + 1));
         userMachineMap.put(user, machine);
         System.out.println("U: " + user.username + " OTP: " + machine.getOtp());
+
         routingContext.response().setStatusCode(HttpResponseStatus.OK.code()).end();
     }
 
